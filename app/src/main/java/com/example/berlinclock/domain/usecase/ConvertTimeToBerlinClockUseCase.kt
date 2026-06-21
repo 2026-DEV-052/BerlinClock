@@ -4,6 +4,8 @@ import com.example.berlinclock.domain.model.BerlinClock
 
 class ConvertTimeToBerlinClockUseCase {
     operator fun invoke(hours: Int, minutes: Int, seconds: Int): BerlinClock {
-        TODO("not implemented yet")
+        return BerlinClock(
+            second = seconds % 2 == 0
+        )
     }
 }
