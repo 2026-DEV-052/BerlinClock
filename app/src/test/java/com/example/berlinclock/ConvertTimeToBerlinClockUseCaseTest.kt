@@ -54,7 +54,7 @@ class ConvertTimeToBerlinClockUseCaseTest {
         "9,4",
         "10,0",
     )
-    fun `one hour led lit when the number of hours is remaining is 1`(hours: Int, expected: Int) {
+    fun `one hour row lights one led per hour`(hours: Int, expected: Int) {
         val expected = List(4) { it < expected }
 
         assertEquals(
@@ -82,6 +82,24 @@ class ConvertTimeToBerlinClockUseCaseTest {
         assertEquals(
             expected = expected,
             actual = useCase(hours = 0, minutes = minutes, seconds = 0).minutesBy5,
+        )
+    }
+
+    @ParameterizedTest(name = ": {0} minutes {1} single minute led turn on")
+    @CsvSource(
+        "1,1",
+        "2,2",
+        "3,3",
+        "4,4",
+        "5,0",
+        "0,0",
+    )
+    fun `one minute row lights one led per minute`(minutes: Int, expected: Int) {
+        val expected = List(4) { it < expected }
+
+        assertEquals(
+            expected = expected,
+            actual = useCase(hours = 0, minutes = minutes, seconds = 0).minutesBy1
         )
     }
 }

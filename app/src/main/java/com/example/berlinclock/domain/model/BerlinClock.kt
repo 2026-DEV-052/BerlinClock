@@ -17,4 +17,5 @@ data class BerlinClock(
         false,
         false,
     ),
+    val minutesBy1: List<Boolean> = listOf(false, false, false, false),
 )
