@@ -4,4 +4,17 @@ data class BerlinClock(
     val second: Boolean = false,
     val hoursBy5: List<Boolean> = listOf(false, false, false, false),
     val hoursBy1: List<Boolean> = listOf(false, false, false, false),
+    val minutesBy5: List<Boolean> = listOf(
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+    ),
 )

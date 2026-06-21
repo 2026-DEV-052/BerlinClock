@@ -1,7 +1,9 @@
 package com.example.berlinclock
 
 import com.example.berlinclock.domain.usecase.ConvertTimeToBerlinClockUseCase
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -20,104 +22,66 @@ class ConvertTimeToBerlinClockUseCaseTest {
         assertFalse { useCase(hours = 0, minutes = 0, seconds = 21).second }
     }
 
-    @Test
-    fun `1 five-hour led lit when the number of hours is less than 10`() {
-        val expected = listOf(true, false, false, false)
+    @ParameterizedTest(name = ": {0} hours {1} five-hour led turn on")
+    @CsvSource(
+        "5,1",
+        "9,1",
+        "10,2",
+        "14,2",
+        "15,3",
+        "19,3",
+        "20,4",
+        "4,0",
+    )
+    fun `five hour row lights one led per five hours`(hours: Int, expected: Int) {
+        val expected = List(4) { it < expected }
 
         assertEquals(
             expected = expected,
-            actual = useCase(hours = 7, minutes = 0, seconds = 0).hoursBy5
+            actual = useCase(hours = hours, minutes = 0, seconds = 0).hoursBy5
         )
     }
 
-    @Test
-    fun `2 five-hour led lit when the number of hours is less than 15`() {
-        val expected = listOf(true, true, false, false)
+    @ParameterizedTest(name = ": {0} hours {1} single hour led turn on")
+    @CsvSource(
+        "1,1",
+        "2,2",
+        "3,3",
+        "4,4",
+        "6,1",
+        "7,2",
+        "8,3",
+        "9,4",
+        "10,0",
+    )
+    fun `one hour led lit when the number of hours is remaining is 1`(hours: Int, expected: Int) {
+        val expected = List(4) { it < expected }
 
         assertEquals(
             expected = expected,
-            actual = useCase(hours = 12, minutes = 0, seconds = 0).hoursBy5
+            actual = useCase(hours = hours, minutes = 0, seconds = 0).hoursBy1
         )
     }
 
-    @Test
-    fun `3 five-hour led lit when the number of hours is less than 20`() {
-        val expected = listOf(true, true, true, false)
+    @ParameterizedTest(name = ": {0} minutes {1} five minute led turn on")
+    @CsvSource(
+        "0, 0",
+        "5, 1",
+        "10, 2",
+        "14, 2",
+        "15, 3",
+        "19, 3",
+        "20, 4",
+        "45, 9",
+        "55, 11",
+        "59, 11",
+    )
+    fun `five minute row lights one led per five minutes`(minutes: Int, expected: Int) {
+        val expected = List(11) { it < expected }
 
         assertEquals(
             expected = expected,
-            actual = useCase(hours = 19, minutes = 0, seconds = 0).hoursBy5
+            actual = useCase(hours = 0, minutes = minutes, seconds = 0).minutesBy5,
         )
     }
-
-    @Test
-    fun `4 five-hour led lit when the number of hours is equal to 20`() {
-        val expected = listOf(true, true, true, true)
-
-        assertEquals(
-            expected = expected,
-            actual = useCase(hours = 20, minutes = 0, seconds = 0).hoursBy5
-        )
-    }
-
-    @Test
-    fun `all five-hour led are off when the number of hours is less than 5`() {
-        val expected = listOf(false, false, false, false)
-
-        assertEquals(
-            expected = expected,
-            actual = useCase(hours = 3, minutes = 0, seconds = 0).hoursBy5
-        )
-    }
-
-    @Test
-    fun `one hour led lit when the number of hours is remaining is 1`() {
-        val expected = listOf(true, false, false, false)
-
-        assertEquals(
-            expected = expected,
-            actual = useCase(hours = 6, minutes = 0, seconds = 0).hoursBy1
-        )
-    }
-
-    @Test
-    fun `two single hour led lit when the number of hours is remaining is 2`() {
-        val expected = listOf(true, true, false, false)
-
-        assertEquals(
-            expected = expected,
-            actual = useCase(hours = 12, minutes = 0, seconds = 0).hoursBy1
-        )
-    }
-
-    @Test
-    fun `three single hour led lit when the number of hours is remaining is 3`() {
-        val expected = listOf(true, true, true, false)
-
-        assertEquals(
-            expected = expected,
-            actual = useCase(hours = 23, minutes = 0, seconds = 0).hoursBy1
-        )
-    }
-
-    @Test
-    fun `four single hour led lit when the number of hours is remaining is 4`() {
-        val expected = listOf(true, true, true, true)
-
-        assertEquals(
-            expected = expected,
-            actual = useCase(hours = 24, minutes = 0, seconds = 0).hoursBy1
-        )
-    }
-
-    @Test
-    fun `all single hour led are off when the number of hours is remaining is 0`() {
-        val expected = listOf(false, false, false, false)
-
-        assertEquals(
-            expected = expected,
-            actual = useCase(hours = 10, minutes = 0, seconds = 0).hoursBy1
-        )
-    }
-
 }
