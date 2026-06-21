@@ -8,6 +8,7 @@ class ConvertTimeToBerlinClockUseCase {
             second = seconds % 2 == 0,
             hoursBy5 = (hours / 5).toLit(4),
             hoursBy1 = (hours % 5).toLit(4),
+            minutesBy5 = (minutes / 5).toLit(11)
         )
     }
 
