@@ -69,4 +69,55 @@ class ConvertTimeToBerlinClockUseCaseTest {
             actual = useCase(hours = 3, minutes = 0, seconds = 0).hoursBy5
         )
     }
+
+    @Test
+    fun `one hour led lit when the number of hours is remaining is 1`() {
+        val expected = listOf(true, false, false, false)
+
+        assertEquals(
+            expected = expected,
+            actual = useCase(hours = 6, minutes = 0, seconds = 0).hoursBy1
+        )
+    }
+
+    @Test
+    fun `two single hour led lit when the number of hours is remaining is 2`() {
+        val expected = listOf(true, true, false, false)
+
+        assertEquals(
+            expected = expected,
+            actual = useCase(hours = 12, minutes = 0, seconds = 0).hoursBy1
+        )
+    }
+
+    @Test
+    fun `three single hour led lit when the number of hours is remaining is 3`() {
+        val expected = listOf(true, true, true, false)
+
+        assertEquals(
+            expected = expected,
+            actual = useCase(hours = 23, minutes = 0, seconds = 0).hoursBy1
+        )
+    }
+
+    @Test
+    fun `four single hour led lit when the number of hours is remaining is 4`() {
+        val expected = listOf(true, true, true, true)
+
+        assertEquals(
+            expected = expected,
+            actual = useCase(hours = 24, minutes = 0, seconds = 0).hoursBy1
+        )
+    }
+
+    @Test
+    fun `all single hour led are off when the number of hours is remaining is 0`() {
+        val expected = listOf(false, false, false, false)
+
+        assertEquals(
+            expected = expected,
+            actual = useCase(hours = 10, minutes = 0, seconds = 0).hoursBy1
+        )
+    }
+
 }
