@@ -17,7 +17,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -31,13 +30,12 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.berlinclock.domain.model.BerlinClock
 import com.example.berlinclock.domain.model.Time
-import com.example.berlinclock.domain.usecase.ConvertTimeToBerlinClockUseCase
 import com.example.berlinclock.presentation.viewmodel.BerlinClockViewModel
-import java.time.LocalTime
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun BerlinClockScreen(modifier: Modifier = Modifier) {
-    val viewModel = remember { BerlinClockViewModel() }
+    val viewModel: BerlinClockViewModel = koinViewModel()
 
     val state = viewModel.state.collectAsStateWithLifecycle()
 
