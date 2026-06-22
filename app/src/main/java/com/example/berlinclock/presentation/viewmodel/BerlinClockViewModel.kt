@@ -36,6 +36,10 @@ class BerlinClockViewModel(
         }
     }
 
+    fun getTime(): Time {
+        TODO("not yet impl")
+    }
+
     sealed class State {
         data object Initialized : State()
         data object Loading : State()

@@ -30,17 +30,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.berlinclock.domain.model.BerlinClock
+import com.example.berlinclock.domain.model.Time
 import com.example.berlinclock.domain.usecase.ConvertTimeToBerlinClockUseCase
 import com.example.berlinclock.presentation.viewmodel.BerlinClockViewModel
 import java.time.LocalTime
 
 @Composable
 fun BerlinClockScreen(modifier: Modifier = Modifier) {
-    val viewModel = remember {
-        BerlinClockViewModel(
-            convertTimeToBerlinClock = ConvertTimeToBerlinClockUseCase()
-        )
-    }
+    val viewModel = remember { BerlinClockViewModel() }
 
     val state = viewModel.state.collectAsStateWithLifecycle()
 
@@ -64,7 +61,7 @@ fun BerlinClockScreen(modifier: Modifier = Modifier) {
 @Composable
 fun BerlinClockComposition(
     modifier: Modifier = Modifier,
-    currentTime: LocalTime,
+    currentTime: Time,
     berlinClockState: BerlinClock
 ) {
     Column(
@@ -184,7 +181,7 @@ fun BerlinClockComposition(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "${currentTime.hour}:${currentTime.minute}:${currentTime.second}",
+                text = "${currentTime.hours}:${currentTime.minutes}:${currentTime.seconds}",
                 fontSize = 68.sp,
                 fontWeight = FontWeight.Black
             )
@@ -212,7 +209,7 @@ fun BerlinClockScreenPreview() {
             modifier = Modifier
                 .padding(it)
                 .padding(horizontal = 15.dp),
-            currentTime = LocalTime.now(),
+            currentTime = Time(0, 0, 0),
             berlinClockState = BerlinClock(
                 second = true,
                 hoursBy5 = listOf(
