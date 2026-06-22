@@ -7,6 +7,7 @@ import com.example.berlinclock.domain.usecase.ConvertTimeToBerlinClockUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalTime
 
 class BerlinClockViewModel(
     val convertTimeToBerlinClock: ConvertTimeToBerlinClockUseCase
@@ -19,20 +20,26 @@ class BerlinClockViewModel(
         viewModelScope.launch {
             _state.emit(State.Loading)
 
+            val currentTime = LocalTime.now()
             val berlinClock = convertTimeToBerlinClock(
-                hours = 10,
-                minutes = 35,
-                seconds = 59
+                hours = currentTime.hour,
+                minutes = currentTime.minute,
+                seconds = currentTime.second
             )
 
-            _state.emit(State.Content(berlinClock))
+            _state.emit(
+                State.Content(
+                    currentTime,
+                    berlinClock
+                )
+            )
         }
     }
 
     sealed class State {
         data object Initialized : State()
         data object Loading : State()
-        data class Content(val berlinClock: BerlinClock) : State()
+        data class Content(val time: LocalTime, val berlinClock: BerlinClock) : State()
         data class Error(val message: String) : State()
     }
 }
