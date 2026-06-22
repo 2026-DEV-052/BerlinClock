@@ -35,8 +35,9 @@ class BerlinClockViewModel(
 
                 _state.emit(
                     State.Content(
-                        currentTime,
-                        berlinClock
+                        time = currentTime,
+                        formattedTime = currentTime.toDisplayString(),
+                        berlinClock = berlinClock
                     )
                 )
 
@@ -47,10 +48,15 @@ class BerlinClockViewModel(
 
     fun requestCurrentTime() = getTime()
 
+    private fun Time.toDisplayString() =
+        "${hours.pad()}:${minutes.pad()}:${seconds.pad()}"
+
+    private fun Int.pad() = toString().padStart(2, '0')
+
     sealed class State {
         data object Initialized : State()
         data object Loading : State()
-        data class Content(val time: Time, val berlinClock: BerlinClock) : State()
+        data class Content(val time: Time, val formattedTime: String, val berlinClock: BerlinClock) : State()
         data class Error(val message: String) : State()
     }
 }

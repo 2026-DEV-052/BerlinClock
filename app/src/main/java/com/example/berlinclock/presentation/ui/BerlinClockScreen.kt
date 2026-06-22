@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.berlinclock.domain.model.BerlinClock
-import com.example.berlinclock.domain.model.Time
 import com.example.berlinclock.presentation.viewmodel.BerlinClockViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -46,7 +45,7 @@ fun BerlinClockScreen(modifier: Modifier = Modifier) {
     ) {
         when (val s = state.value) {
             is BerlinClockViewModel.State.Content -> {
-                BerlinClockComposition(currentTime = s.time, berlinClockState = s.berlinClock)
+                BerlinClockComposition(formattedTime = s.formattedTime, berlinClockState = s.berlinClock)
             }
 
             is BerlinClockViewModel.State.Error -> {}
@@ -59,7 +58,7 @@ fun BerlinClockScreen(modifier: Modifier = Modifier) {
 @Composable
 fun BerlinClockComposition(
     modifier: Modifier = Modifier,
-    currentTime: Time,
+    formattedTime: String,
     berlinClockState: BerlinClock
 ) {
     Column(
@@ -179,7 +178,7 @@ fun BerlinClockComposition(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "${currentTime.hours}:${currentTime.minutes}:${currentTime.seconds}",
+                text = formattedTime,
                 fontSize = 68.sp,
                 fontWeight = FontWeight.Black
             )
@@ -207,7 +206,7 @@ fun BerlinClockScreenPreview() {
             modifier = Modifier
                 .padding(it)
                 .padding(horizontal = 15.dp),
-            currentTime = Time(0, 0, 0),
+            formattedTime = "00:00:00",
             berlinClockState = BerlinClock(
                 second = true,
                 hoursBy5 = listOf(

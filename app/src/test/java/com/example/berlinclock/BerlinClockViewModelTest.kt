@@ -17,7 +17,7 @@ class BerlinClockViewModelTest {
 
     lateinit var viewModel: BerlinClockViewModel
 
-    private val defaultTime = Time(hours = 0, minutes = 0, seconds = 0)
+    private val defaultTime = Time(hours = 9, minutes = 5, seconds = 3)
 
     @BeforeTest
     fun init() {
@@ -48,15 +48,14 @@ class BerlinClockViewModelTest {
         assertEquals(expected = BerlinClockViewModel.State.Loading, viewModel.state.value)
         advanceUntilIdle()
         assertEquals(
-            expected = BerlinClockViewModel.State.Content(time = defaultTime, BerlinClock()),
+            expected = BerlinClockViewModel.State.Content(time = defaultTime, formattedTime = "09:05:03", BerlinClock()),
             actual = viewModel.state.value
         )
     }
 
     @Test
     fun `when time is requested, a Time object is provided`() {
-        val expected = Time(hours = 0, minutes = 0, seconds = 0)
-        assertEquals(expected = expected, actual = viewModel.requestCurrentTime())
+        assertEquals(expected = defaultTime, actual = viewModel.requestCurrentTime())
     }
 
 }
