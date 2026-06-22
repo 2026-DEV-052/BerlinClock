@@ -3,14 +3,16 @@ package com.example.berlinclock.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.berlinclock.domain.model.BerlinClock
+import com.example.berlinclock.domain.model.Time
 import com.example.berlinclock.domain.usecase.ConvertTimeToBerlinClockUseCase
+import com.example.berlinclock.domain.usecase.GetTimeUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.time.LocalTime
 
 class BerlinClockViewModel(
-    val convertTimeToBerlinClock: ConvertTimeToBerlinClockUseCase
+    val getTime: GetTimeUseCase = GetTimeUseCase(),
+    val convertTimeToBerlinClock: ConvertTimeToBerlinClockUseCase = ConvertTimeToBerlinClockUseCase()
 ) : ViewModel() {
     val _state = MutableStateFlow<State>(State.Initialized)
     val state: StateFlow<State>
@@ -20,11 +22,12 @@ class BerlinClockViewModel(
         viewModelScope.launch {
             _state.emit(State.Loading)
 
-            val currentTime = LocalTime.now()
+            val currentTime = requestCurrentTime()
+
             val berlinClock = convertTimeToBerlinClock(
-                hours = currentTime.hour,
-                minutes = currentTime.minute,
-                seconds = currentTime.second
+                hours = currentTime.hours,
+                minutes = currentTime.minutes,
+                seconds = currentTime.seconds
             )
 
             _state.emit(
@@ -36,14 +39,12 @@ class BerlinClockViewModel(
         }
     }
 
-    fun getTime(): Time {
-        TODO("not yet impl")
-    }
+    fun requestCurrentTime() = getTime()
 
     sealed class State {
         data object Initialized : State()
         data object Loading : State()
-        data class Content(val time: LocalTime, val berlinClock: BerlinClock) : State()
+        data class Content(val time: Time, val berlinClock: BerlinClock) : State()
         data class Error(val message: String) : State()
     }
 }

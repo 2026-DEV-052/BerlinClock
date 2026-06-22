@@ -2,6 +2,7 @@ package com.example.berlinclock
 
 import com.example.berlinclock.domain.model.BerlinClock
 import com.example.berlinclock.domain.model.Time
+import com.example.berlinclock.domain.repository.TimeRepository
 import com.example.berlinclock.domain.usecase.ConvertTimeToBerlinClockUseCase
 import com.example.berlinclock.domain.usecase.GetTimeUseCase
 import com.example.berlinclock.presentation.viewmodel.BerlinClockViewModel
@@ -21,7 +22,11 @@ class BerlinClockViewModelTest {
     @BeforeTest
     fun init() {
         viewModel = BerlinClockViewModel(
-            getTime = GetTimeUseCase(),
+            getTime = GetTimeUseCase(
+                timeRepository = object : TimeRepository {
+                    override fun getTime() = defaultTime
+                }
+            ),
             convertTimeToBerlinClock = object : ConvertTimeToBerlinClockUseCase() {
                 override fun invoke(hours: Int, minutes: Int, seconds: Int): BerlinClock {
                     return super.invoke(0, 0, 1)
@@ -51,7 +56,7 @@ class BerlinClockViewModelTest {
     @Test
     fun `when time is requested, a Time object is provided`() {
         val expected = Time(hours = 0, minutes = 0, seconds = 0)
-        assertEquals(expected = expected, actual = viewModel.getTime())
+        assertEquals(expected = expected, actual = viewModel.requestCurrentTime())
     }
 
 }
