@@ -2,37 +2,48 @@ package com.example.berlinclock
 
 import com.example.berlinclock.domain.model.BerlinClock
 import com.example.berlinclock.domain.model.Time
-import com.example.berlinclock.domain.repository.TimeRepository
 import com.example.berlinclock.domain.usecase.ConvertTimeToBerlinClockUseCase
 import com.example.berlinclock.domain.usecase.GetTimeUseCase
 import com.example.berlinclock.presentation.viewmodel.BerlinClockViewModel
+import io.mockk.MockKAnnotations
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.Test
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class BerlinClockViewModelTest {
+
+    private val mainDispatcher = StandardTestDispatcher()
 
     lateinit var viewModel: BerlinClockViewModel
 
-    private val defaultTime = Time(hours = 9, minutes = 5, seconds = 3)
+    @MockK
+    lateinit var getTimeUseCase: GetTimeUseCase
+    @MockK
+    lateinit var convertTimeToBerlinClockUseCase: ConvertTimeToBerlinClockUseCase
+
+    private val defaultTime = Time(hours = 0, minutes = 0, seconds = 0)
+    private val defaultBerlinClock = BerlinClock()
 
     @BeforeTest
     fun init() {
-        viewModel = BerlinClockViewModel(
-            getTime = GetTimeUseCase(
-                timeRepository = object : TimeRepository {
-                    override fun getTime() = defaultTime
-                }
-            ),
-            convertTimeToBerlinClock = object : ConvertTimeToBerlinClockUseCase() {
-                override fun invoke(hours: Int, minutes: Int, seconds: Int): BerlinClock {
-                    return super.invoke(0, 0, 1)
-                }
-            }
-        )
+        MockKAnnotations.init(this)
+        Dispatchers.setMain(mainDispatcher)
+        viewModel = BerlinClockViewModel(getTimeUseCase, convertTimeToBerlinClockUseCase)
+    }
+
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
     }
 
     @Test
@@ -40,22 +51,29 @@ class BerlinClockViewModelTest {
         assertEquals(expected = BerlinClockViewModel.State.Initialized, viewModel.state.value)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `When the viewModel is init, state is Loading then Content`() = runTest {
+    fun `When the viewModel is init, state becomes Content`() {
+        every { getTimeUseCase() } returns defaultTime
+        every { convertTimeToBerlinClockUseCase(any(), any(), any()) } returns defaultBerlinClock
+        val expectedFormatedTime = "00:00:00"
+
         viewModel.init()
-        advanceUntilIdle()
-        assertEquals(expected = BerlinClockViewModel.State.Loading, viewModel.state.value)
-        advanceUntilIdle()
+        mainDispatcher.scheduler.runCurrent()
+
         assertEquals(
-            expected = BerlinClockViewModel.State.Content(time = defaultTime, formattedTime = "09:05:03", BerlinClock()),
+            expected = BerlinClockViewModel.State.Content(
+                time = defaultTime,
+                formattedTime = expectedFormatedTime,
+                berlinClock = defaultBerlinClock
+            ),
             actual = viewModel.state.value
         )
     }
 
     @Test
     fun `when time is requested, a Time object is provided`() {
+        every { getTimeUseCase() } returns defaultTime
+
         assertEquals(expected = defaultTime, actual = viewModel.requestCurrentTime())
     }
-
 }
