@@ -13,10 +13,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -47,9 +49,12 @@ fun BerlinClockScreen(modifier: Modifier = Modifier) {
                 BerlinClockComposition(formattedTime = s.formattedTime, berlinClockState = s.berlinClock)
             }
 
-            is BerlinClockViewModel.State.Error -> {}
-            is BerlinClockViewModel.State.Initialized -> {}
-            is BerlinClockViewModel.State.Loading -> {}
+            is BerlinClockViewModel.State.Loading,
+            is BerlinClockViewModel.State.Initialized ->
+                CircularProgressIndicator(Modifier.align(Alignment.Center))
+
+            is BerlinClockViewModel.State.Error ->
+                Text(text = s.message, modifier = Modifier.align(Alignment.Center))
         }
     }
 }

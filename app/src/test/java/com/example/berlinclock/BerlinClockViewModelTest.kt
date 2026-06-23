@@ -83,4 +83,17 @@ class BerlinClockViewModelTest {
 
         verify(exactly = 2) { getTimeUseCase() }
     }
+
+    @Test
+    fun `state becomes Error when getTime throws`() = runTest {
+        every { getTimeUseCase() } throws RuntimeException("boom")
+
+        viewModel.state.launchIn(backgroundScope)
+        mainDispatcher.scheduler.runCurrent()
+
+        assertEquals(
+            expected = BerlinClockViewModel.State.Error("boom"),
+            actual = viewModel.state.value
+        )
+    }
 }

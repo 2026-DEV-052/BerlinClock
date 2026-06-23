@@ -9,6 +9,7 @@ import com.example.berlinclock.domain.usecase.GetTimeUseCase
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 
@@ -29,6 +30,8 @@ class BerlinClockViewModel(
             )
             delay(1000)
         }
+    }.catch { throwable ->
+        emit(State.Error(throwable.message ?: "Unknown error"))
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
