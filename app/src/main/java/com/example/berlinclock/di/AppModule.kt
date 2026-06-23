@@ -5,12 +5,15 @@ import com.example.berlinclock.domain.repository.TimeRepository
 import com.example.berlinclock.domain.usecase.ConvertTimeToBerlinClockUseCase
 import com.example.berlinclock.domain.usecase.GetTimeUseCase
 import com.example.berlinclock.presentation.viewmodel.BerlinClockViewModel
-import org.koin.core.module.dsl.viewModel
+import org.koin.core.module.dsl.bind
+import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val appModule = module {
-    single<TimeRepository> { LocalTimeRepositoryImpl() }
-    factory { GetTimeUseCase(get()) }
-    factory { ConvertTimeToBerlinClockUseCase() }
-    viewModel { BerlinClockViewModel(get(), get()) }
+    singleOf(::LocalTimeRepositoryImpl) { bind<TimeRepository>() }
+    factoryOf(::GetTimeUseCase)
+    factoryOf(::ConvertTimeToBerlinClockUseCase)
+    viewModelOf(::BerlinClockViewModel)
 }
