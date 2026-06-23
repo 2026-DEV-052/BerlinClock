@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices.PIXEL_9_PRO_XL
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -65,6 +66,7 @@ fun BerlinClockComposition(
         verticalArrangement = Arrangement.Center,
         modifier = modifier
     ) {
+        //seconds
         Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
             Box(
                 modifier = Modifier
@@ -72,107 +74,54 @@ fun BerlinClockComposition(
                     .border(2.dp, color = Color.Black, shape = CircleShape)
                     .clip(CircleShape)
                     .background(
-                        color = if (berlinClockState.second) Color.Red else Color.White
+                        color = if (berlinClockState.second) Color.Red else Color.Transparent
                     )
             )
         }
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            val itemsCount = berlinClockState.hoursBy5.size
-            berlinClockState.hoursBy5.forEachIndexed { index, isOn ->
-                val itemShape = rowItemShape(index, itemsCount)
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(50.dp)
-                        .clip(itemShape)
-                        .border(2.dp, color = Color.Black, shape = itemShape)
-                        .background(
-                            color = if (isOn) Color.Red else Color.White
-                        )
-                )
+        //hoursBy5
+        BerlinClockRow(
+            leds = berlinClockState.hoursBy5,
+            horizontalSpacing = 10.dp
+        ) { _, isOn -> if (isOn) Color.Red else Color.Transparent }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        //hoursBy1
+        BerlinClockRow(
+            leds = berlinClockState.hoursBy1,
+            horizontalSpacing = 10.dp
+        ) { _, isOn -> if (isOn) Color.Red else Color.Transparent }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        //minutesBy5
+        BerlinClockRow(
+            leds = berlinClockState.minutesBy5,
+            horizontalSpacing = 5.dp
+        ) { index, isOn ->
+            if (!isOn) {
+                Color.Transparent
+            } else if (minutesIsRed(index + 1)) {
+                Color.Red
+            } else {
+                Color.Yellow
             }
         }
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            val itemsCount = berlinClockState.hoursBy1.size
-            berlinClockState.hoursBy1.forEachIndexed { index, isOn ->
-                val itemShape = rowItemShape(index, itemsCount)
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(50.dp)
-                        .clip(itemShape)
-                        .border(2.dp, color = Color.Black, shape = itemShape)
-                        .background(
-                            color = if (isOn) Color.Red else Color.White
-                        )
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(5.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            val itemsCount = berlinClockState.minutesBy5.size
-            berlinClockState.minutesBy5.forEachIndexed { index, isOn ->
-                val itemShape = rowItemShape(index, itemsCount)
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(50.dp)
-                        .clip(itemShape)
-                        .border(2.dp, color = Color.Black, shape = itemShape)
-                        .background(
-                            color = if (!isOn) {
-                                Color.Transparent
-                            } else if (minutesIsRed(index + 1)) {
-                                Color.Red
-                            } else {
-                                Color.Yellow
-                            }
-                        )
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            val itemsCount = berlinClockState.minutesBy1.size
-            berlinClockState.minutesBy1.forEachIndexed { index, isOn ->
-                val itemShape = rowItemShape(index, itemsCount)
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(50.dp)
-                        .clip(itemShape)
-                        .border(2.dp, color = Color.Black, shape = itemShape)
-                        .background(
-                            color = if (isOn) Color.Yellow else Color.White
-                        )
-                )
-            }
-        }
+        //minutesBy1
+        BerlinClockRow(
+            leds = berlinClockState.minutesBy1,
+            horizontalSpacing = 10.dp
+        ) { _, isOn -> if (isOn) Color.Yellow else Color.White }
 
         Spacer(modifier = Modifier.height(50.dp))
 
+        //time formated
         Row(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
@@ -184,6 +133,32 @@ fun BerlinClockComposition(
             )
         }
 
+    }
+}
+
+@Composable
+private fun BerlinClockRow(
+    leds: List<Boolean>,
+    horizontalSpacing: Dp,
+    modifier: Modifier = Modifier,
+    lampColor: (index: Int, isOn: Boolean) -> Color
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(horizontalSpacing),
+        modifier = modifier.fillMaxWidth()
+    ) {
+        val itemsCount = leds.size
+        leds.forEachIndexed { index, isOn ->
+            val itemShape = rowItemShape(index, itemsCount)
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(50.dp)
+                    .clip(itemShape)
+                    .border(2.dp, color = Color.Black, shape = itemShape)
+                    .background(color = lampColor(index, isOn))
+            )
+        }
     }
 }
 
