@@ -16,7 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -37,14 +37,12 @@ import org.koin.androidx.compose.koinViewModel
 fun BerlinClockScreen(modifier: Modifier = Modifier) {
     val viewModel: BerlinClockViewModel = koinViewModel()
 
-    val state = viewModel.state.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) { viewModel.init() }
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     Box(
         modifier = modifier
     ) {
-        when (val s = state.value) {
+        when (val s = state) {
             is BerlinClockViewModel.State.Content -> {
                 BerlinClockComposition(formattedTime = s.formattedTime, berlinClockState = s.berlinClock)
             }

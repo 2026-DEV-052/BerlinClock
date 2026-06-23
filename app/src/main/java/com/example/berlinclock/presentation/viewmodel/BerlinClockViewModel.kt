@@ -7,42 +7,33 @@ import com.example.berlinclock.domain.model.Time
 import com.example.berlinclock.domain.usecase.ConvertTimeToBerlinClockUseCase
 import com.example.berlinclock.domain.usecase.GetTimeUseCase
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.stateIn
 
 class BerlinClockViewModel(
     private val getTime: GetTimeUseCase,
     private val convertTimeToBerlinClock: ConvertTimeToBerlinClockUseCase
 ) : ViewModel() {
-    private val _state = MutableStateFlow<State>(State.Initialized)
-    val state: StateFlow<State>
-        get() = _state
-
-    fun init() {
-        viewModelScope.launch {
-            _state.emit(State.Loading)
-
-            while (isActive) {
-                val currentTime = requestCurrentTime()
-
-                val berlinClock = convertTimeToBerlinClock(currentTime)
-
-                _state.emit(
-                    State.Content(
-                        time = currentTime,
-                        formattedTime = currentTime.toDisplayString(),
-                        berlinClock = berlinClock
-                    )
+    val state: StateFlow<State> = flow {
+        emit(State.Loading)
+        while (true) {
+            val currentTime = getTime()
+            emit(
+                State.Content(
+                    time = currentTime,
+                    formattedTime = currentTime.toDisplayString(),
+                    berlinClock = convertTimeToBerlinClock(currentTime)
                 )
-
-                delay(1000)
-            }
+            )
+            delay(1000)
         }
-    }
-
-    fun requestCurrentTime() = getTime()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = State.Initialized
+    )
 
     private fun Time.toDisplayString() =
         "${hours.pad()}:${minutes.pad()}:${seconds.pad()}"

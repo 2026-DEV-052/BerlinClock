@@ -8,10 +8,13 @@ import com.example.berlinclock.presentation.viewmodel.BerlinClockViewModel
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.Test
 import kotlin.test.AfterTest
@@ -51,18 +54,17 @@ class BerlinClockViewModelTest {
     }
 
     @Test
-    fun `When the viewModel is init, state becomes Content`() {
+    fun `state becomes Content once collected`() = runTest {
         every { getTimeUseCase() } returns defaultTime
         every { convertTimeToBerlinClockUseCase(any()) } returns defaultBerlinClock
-        val expectedFormatedTime = "00:00:00"
 
-        viewModel.init()
+        viewModel.state.launchIn(backgroundScope)
         mainDispatcher.scheduler.runCurrent()
 
         assertEquals(
             expected = BerlinClockViewModel.State.Content(
                 time = defaultTime,
-                formattedTime = expectedFormatedTime,
+                formattedTime = "00:00:00",
                 berlinClock = defaultBerlinClock
             ),
             actual = viewModel.state.value
@@ -70,9 +72,15 @@ class BerlinClockViewModelTest {
     }
 
     @Test
-    fun `when time is requested, a Time object is provided`() {
-        every { getTimeUseCase() } returns defaultTime
+    fun `state re-emits every second`() = runTest(mainDispatcher) {
+        every { getTimeUseCase() } returnsMany listOf(defaultTime, defaultTime)
+        every { convertTimeToBerlinClockUseCase(any()) } returns defaultBerlinClock
 
-        assertEquals(expected = defaultTime, actual = viewModel.requestCurrentTime())
+        viewModel.state.launchIn(backgroundScope)
+        mainDispatcher.scheduler.runCurrent()
+        mainDispatcher.scheduler.advanceTimeBy(1_000)
+        mainDispatcher.scheduler.runCurrent()
+
+        verify(exactly = 2) { getTimeUseCase() }
     }
 }
