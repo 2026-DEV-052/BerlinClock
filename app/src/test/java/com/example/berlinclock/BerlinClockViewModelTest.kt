@@ -53,7 +53,7 @@ class BerlinClockViewModelTest {
     @Test
     fun `When the viewModel is init, state becomes Content`() {
         every { getTimeUseCase() } returns defaultTime
-        every { convertTimeToBerlinClockUseCase(any(), any(), any()) } returns defaultBerlinClock
+        every { convertTimeToBerlinClockUseCase(any()) } returns defaultBerlinClock
         val expectedFormatedTime = "00:00:00"
 
         viewModel.init()

@@ -1,15 +1,16 @@
 package com.example.berlinclock.domain.usecase
 
 import com.example.berlinclock.domain.model.BerlinClock
+import com.example.berlinclock.domain.model.Time
 
 class ConvertTimeToBerlinClockUseCase {
-    operator fun invoke(hours: Int, minutes: Int, seconds: Int): BerlinClock {
+    operator fun invoke(time: Time): BerlinClock {
         return BerlinClock(
-            second = seconds % 2 == 0,
-            hoursBy5 = (hours / 5).toLit(4),
-            hoursBy1 = (hours % 5).toLit(4),
-            minutesBy5 = (minutes / 5).toLit(11),
-            minutesBy1 = (minutes % 5).toLit(4),
+            second = time.seconds % 2 == 0,
+            hoursBy5 = (time.hours / 5).toLit(4),
+            hoursBy1 = (time.hours % 5).toLit(4),
+            minutesBy5 = (time.minutes / 5).toLit(11),
+            minutesBy1 = (time.minutes % 5).toLit(4),
         )
     }
 

@@ -13,10 +13,10 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class BerlinClockViewModel(
-    val getTime: GetTimeUseCase,
-    val convertTimeToBerlinClock: ConvertTimeToBerlinClockUseCase
+    private val getTime: GetTimeUseCase,
+    private val convertTimeToBerlinClock: ConvertTimeToBerlinClockUseCase
 ) : ViewModel() {
-    val _state = MutableStateFlow<State>(State.Initialized)
+    private val _state = MutableStateFlow<State>(State.Initialized)
     val state: StateFlow<State>
         get() = _state
 
@@ -27,11 +27,7 @@ class BerlinClockViewModel(
             while (isActive) {
                 val currentTime = requestCurrentTime()
 
-                val berlinClock = convertTimeToBerlinClock(
-                    hours = currentTime.hours,
-                    minutes = currentTime.minutes,
-                    seconds = currentTime.seconds
-                )
+                val berlinClock = convertTimeToBerlinClock(currentTime)
 
                 _state.emit(
                     State.Content(
@@ -56,7 +52,12 @@ class BerlinClockViewModel(
     sealed class State {
         data object Initialized : State()
         data object Loading : State()
-        data class Content(val time: Time, val formattedTime: String, val berlinClock: BerlinClock) : State()
+        data class Content(
+            val time: Time,
+            val formattedTime: String,
+            val berlinClock: BerlinClock
+        ) : State()
+
         data class Error(val message: String) : State()
     }
 }

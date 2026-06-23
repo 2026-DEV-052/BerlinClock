@@ -1,5 +1,6 @@
 package com.example.berlinclock
 
+import com.example.berlinclock.domain.model.Time
 import com.example.berlinclock.domain.usecase.ConvertTimeToBerlinClockUseCase
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -14,12 +15,12 @@ class ConvertTimeToBerlinClockUseCaseTest {
 
     @Test
     fun `seconds led is lit during even seconds`() {
-        assertTrue { useCase(hours = 0, minutes = 0, seconds = 2).second }
+        assertTrue { useCase(Time(hours = 0, minutes = 0, seconds = 2)).second }
     }
 
     @Test
     fun `seconds led is off during odd seconds`() {
-        assertFalse { useCase(hours = 0, minutes = 0, seconds = 21).second }
+        assertFalse { useCase(Time(hours = 0, minutes = 0, seconds = 21)).second }
     }
 
     @ParameterizedTest(name = ": {0} hours {1} five-hour led turn on")
@@ -38,7 +39,7 @@ class ConvertTimeToBerlinClockUseCaseTest {
 
         assertEquals(
             expected = expected,
-            actual = useCase(hours = hours, minutes = 0, seconds = 0).hoursBy5
+            actual = useCase(Time(hours = hours, minutes = 0, seconds = 0)).hoursBy5
         )
     }
 
@@ -59,7 +60,7 @@ class ConvertTimeToBerlinClockUseCaseTest {
 
         assertEquals(
             expected = expected,
-            actual = useCase(hours = hours, minutes = 0, seconds = 0).hoursBy1
+            actual = useCase(Time(hours = hours, minutes = 0, seconds = 0)).hoursBy1
         )
     }
 
@@ -81,7 +82,7 @@ class ConvertTimeToBerlinClockUseCaseTest {
 
         assertEquals(
             expected = expected,
-            actual = useCase(hours = 0, minutes = minutes, seconds = 0).minutesBy5,
+            actual = useCase(Time(hours = 0, minutes = minutes, seconds = 0)).minutesBy5,
         )
     }
 
@@ -99,7 +100,7 @@ class ConvertTimeToBerlinClockUseCaseTest {
 
         assertEquals(
             expected = expected,
-            actual = useCase(hours = 0, minutes = minutes, seconds = 0).minutesBy1
+            actual = useCase(Time(hours = 0, minutes = minutes, seconds = 0)).minutesBy1
         )
     }
 }
