@@ -1,5 +1,6 @@
 package com.example.berlinclock.presentation.ui
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +34,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.berlinclock.domain.model.BerlinClock
+import com.example.berlinclock.presentation.ui.theme.BerlinClockTheme
+import com.example.berlinclock.presentation.ui.theme.LedOff
+import com.example.berlinclock.presentation.ui.theme.LedRed
+import com.example.berlinclock.presentation.ui.theme.LedYellow
 import com.example.berlinclock.presentation.viewmodel.BerlinClockViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -74,10 +80,10 @@ fun BerlinClockComposition(
             Box(
                 modifier = Modifier
                     .size(100.dp)
-                    .border(2.dp, color = Color.Black, shape = CircleShape)
+                    .border(2.dp, color = MaterialTheme.colorScheme.outline, shape = CircleShape)
                     .clip(CircleShape)
                     .background(
-                        color = if (berlinClockState.second) Color.Red else Color.Transparent
+                        color = if (berlinClockState.second) LedYellow else LedOff
                     )
             )
         }
@@ -88,7 +94,7 @@ fun BerlinClockComposition(
         BerlinClockRow(
             leds = berlinClockState.hoursBy5,
             horizontalSpacing = 10.dp
-        ) { _, isOn -> if (isOn) Color.Red else Color.Transparent }
+        ) { _, isOn -> if (isOn) LedRed else LedOff }
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -96,7 +102,7 @@ fun BerlinClockComposition(
         BerlinClockRow(
             leds = berlinClockState.hoursBy1,
             horizontalSpacing = 10.dp
-        ) { _, isOn -> if (isOn) Color.Red else Color.Transparent }
+        ) { _, isOn -> if (isOn) LedRed else LedOff }
 
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -106,11 +112,11 @@ fun BerlinClockComposition(
             horizontalSpacing = 5.dp
         ) { index, isOn ->
             if (!isOn) {
-                Color.Transparent
+                LedOff
             } else if (minutesIsRed(index + 1)) {
-                Color.Red
+                LedRed
             } else {
-                Color.Yellow
+                LedYellow
             }
         }
 
@@ -120,7 +126,7 @@ fun BerlinClockComposition(
         BerlinClockRow(
             leds = berlinClockState.minutesBy1,
             horizontalSpacing = 10.dp
-        ) { _, isOn -> if (isOn) Color.Yellow else Color.White }
+        ) { _, isOn -> if (isOn) LedYellow else LedOff }
 
         Spacer(modifier = Modifier.height(50.dp))
 
@@ -151,6 +157,7 @@ private fun BerlinClockRow(
         modifier = modifier.fillMaxWidth()
     ) {
         val itemsCount = leds.size
+        val outline = MaterialTheme.colorScheme.outline
         leds.forEachIndexed { index, isOn ->
             val itemShape = rowItemShape(index, itemsCount)
             Box(
@@ -158,7 +165,7 @@ private fun BerlinClockRow(
                     .weight(1f)
                     .height(50.dp)
                     .clip(itemShape)
-                    .border(2.dp, color = Color.Black, shape = itemShape)
+                    .border(2.dp, color = outline, shape = itemShape)
                     .background(color = lampColor(index, isOn))
             )
         }
@@ -176,49 +183,52 @@ private fun rowItemShape(index: Int, itemCount: Int): Shape {
     }
 }
 
-@Preview(device = PIXEL_9_PRO_XL, backgroundColor = 1, showSystemUi = true)
+@Preview(device = PIXEL_9_PRO_XL, showSystemUi = true)
+@Preview(device = PIXEL_9_PRO_XL, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun BerlinClockScreenPreview() {
-    Scaffold {
-        BerlinClockComposition(
-            modifier = Modifier
-                .padding(it)
-                .padding(horizontal = 15.dp),
-            formattedTime = "00:00:00",
-            berlinClockState = BerlinClock(
-                second = true,
-                hoursBy5 = listOf(
-                    true,
-                    true,
-                    false,
-                    false
-                ),
-                hoursBy1 = listOf(
-                    true,
-                    true,
-                    false,
-                    false
-                ),
-                minutesBy5 = listOf(
-                    true,
-                    true,
-                    true,
-                    true,
-                    true,
-                    true,
-                    true,
-                    true,
-                    true,
-                    true,
-                    true,
-                ),
-                minutesBy1 = listOf(
-                    true,
-                    true,
-                    false,
-                    false
-                ),
+    BerlinClockTheme {
+        Scaffold {
+            BerlinClockComposition(
+                modifier = Modifier
+                    .padding(it)
+                    .padding(horizontal = 15.dp),
+                formattedTime = "00:00:00",
+                berlinClockState = BerlinClock(
+                    second = true,
+                    hoursBy5 = listOf(
+                        true,
+                        true,
+                        false,
+                        false
+                    ),
+                    hoursBy1 = listOf(
+                        true,
+                        true,
+                        false,
+                        false
+                    ),
+                    minutesBy5 = listOf(
+                        true,
+                        true,
+                        true,
+                        true,
+                        true,
+                        true,
+                        true,
+                        true,
+                        true,
+                        true,
+                        true,
+                    ),
+                    minutesBy1 = listOf(
+                        true,
+                        true,
+                        false,
+                        false
+                    ),
+                )
             )
-        )
+        }
     }
 }
