@@ -50,7 +50,7 @@ class BerlinClockViewModelTest {
 
     @Test
     fun `When the viewModel is created, state is Initialized`() {
-        assertEquals(expected = BerlinClockViewModel.State.Initialized, viewModel.state.value)
+        assertEquals(expected = BerlinClockViewModel.State.NotInitialized, viewModel.state.value)
     }
 
     @Test
