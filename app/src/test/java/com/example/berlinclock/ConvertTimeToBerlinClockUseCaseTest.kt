@@ -1,5 +1,6 @@
 package com.example.berlinclock
 
+import com.example.berlinclock.domain.model.BerlinClock
 import com.example.berlinclock.domain.model.Time
 import com.example.berlinclock.domain.usecase.ConvertTimeToBerlinClockUseCase
 import org.junit.jupiter.api.Test
@@ -25,6 +26,8 @@ class ConvertTimeToBerlinClockUseCaseTest {
 
     @ParameterizedTest(name = ": {0} hours {1} five-hour led turn on")
     @CsvSource(
+        "4,0",
+        "0,0",
         "5,1",
         "9,1",
         "10,2",
@@ -32,7 +35,9 @@ class ConvertTimeToBerlinClockUseCaseTest {
         "15,3",
         "19,3",
         "20,4",
-        "4,0",
+        "21,4",
+        "22,4",
+        "23,4",
     )
     fun `five hour row lights one led per five hours`(hours: Int, expected: Int) {
         val expected = List(4) { it < expected }
@@ -45,15 +50,19 @@ class ConvertTimeToBerlinClockUseCaseTest {
 
     @ParameterizedTest(name = ": {0} hours {1} single hour led turn on")
     @CsvSource(
-        "1,1",
-        "2,2",
-        "3,3",
-        "4,4",
-        "6,1",
-        "7,2",
-        "8,3",
-        "9,4",
+        "0,0",
         "10,0",
+        "1,1",
+        "6,1",
+        "21,1",
+        "2,2",
+        "7,2",
+        "22,2",
+        "3,3",
+        "23,3",
+        "8,3",
+        "4,4",
+        "9,4",
     )
     fun `one hour row lights one led per hour`(hours: Int, expected: Int) {
         val expected = List(4) { it < expected }
@@ -101,6 +110,24 @@ class ConvertTimeToBerlinClockUseCaseTest {
         assertEquals(
             expected = expected,
             actual = useCase(Time(hours = 0, minutes = minutes, seconds = 0)).minutesBy1
+        )
+    }
+
+    @Test
+    fun `given a full time and receive a fully configured berlin clock`() {
+        val clock = useCase(Time(hours = 13, minutes = 17, seconds = 1))
+        assertEquals(
+            expected = BerlinClock(
+                second = false,
+                hoursBy5 = listOf(true, true, false, false),
+                hoursBy1 = listOf(true, true, true, false),
+                minutesBy5 = listOf(
+                    true, true, true,
+                    false, false, false, false, false, false, false, false,
+                ),
+                minutesBy1 = listOf(true, true, false, false),
+            ),
+            actual = clock
         )
     }
 }
