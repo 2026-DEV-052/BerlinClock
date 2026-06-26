@@ -110,6 +110,20 @@ in particular — the part most worth getting right — is exhaustively covered.
 Dependencies are managed centrally through the Gradle version catalog
 ([`gradle/libs.versions.toml`](gradle/libs.versions.toml)).
 
+## CI / GitHub Actions
+
+Every push and pull request triggers the [`test_build_action`](.github/actions/test_build_action.yml) workflow, which runs two jobs:
+
+1. **test** — runs all unit tests
+2. **build-apk** — builds the debug APK, only if tests pass.
+
+### Download the debug APK
+
+1. Go to the **Actions** tab of the repository.
+2. Click the workflow run you want.
+3. Scroll to the **Artifacts** section at the bottom of the run summary.
+4. Download **berlin-clock-debug** (a zip containing the APK).
+
 ## Build & run
 
 Standard Gradle tasks, from Android Studio or the command line:
