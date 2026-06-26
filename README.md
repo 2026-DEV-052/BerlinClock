@@ -5,9 +5,9 @@ digits. Built with Jetpack Compose, Clean Architecture and a unidirectional data
 
 ## Screenshots
 
-| Dynamic                                                  | Static                                                  |
-|----------------------------------------------------------|---------------------------------------------------------|
-| <img src="docs/screenshots/dynamic_tab.png" width="250"> | <img src="docs/screenshots/static_tab.png" width="250"> |
+| Dynamic                                                           | Static                                                  |
+|-------------------------------------------------------------------|---------------------------------------------------------|
+| <img src="documentation/screenshots/dynamic_tab.png" width="250"> | <img src="documentation/screenshots/static_tab.png" width="250"> |
 
 ## What is the Berlin Clock?
 
